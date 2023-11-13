@@ -4,12 +4,10 @@ import morgan from "morgan";
 import { rateLimit } from "express-rate-limit";
 import "dotenv/config";
 
+import productRouter from "../backend/routes/productRoutes.js";
+
 const app = express();
 const PORT = process.env.PORT || "3002";
-
-app.listen(3003, () => {
-  console.log(`server is running at http://localhost:${PORT}`);
-});
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minutes
@@ -24,19 +22,22 @@ app.use(limiter);
 app.use(cors());
 
 app.use(morgan("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(productRouter);
 
-let products = [
-  { id: "1", name: "iphone 15", price: 3000 },
-  { id: "2", name: "smart watch", price: 300 },
-  { id: "3", name: "headphones", price: 100 },
-];
+// let products = [
+//   { id: "1", name: "iphone 15", price: 3000 },
+//   { id: "2", name: "smart watch", price: 300 },
+//   { id: "3", name: "headphones", price: 100 },
+// ];
 
-app.get("/products", (req, res) => {
-  res.status(200).json({
-    message: "all products are returned",
-    payload: products,
-  });
-});
+// app.get("/products", (req, res) => {
+//   res.status(200).json({
+//     message: "all products are returned",
+//     payload: products,
+//   });
+// });
 
 // client error
 app.use((req, res, next) => {
@@ -50,4 +51,8 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     message: err.message || "Internal server error",
   });
+});
+
+app.listen(3003, () => {
+  console.log(`server is running at http://localhost:${PORT}`);
 });
