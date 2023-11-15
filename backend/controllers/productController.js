@@ -9,7 +9,7 @@ let products = [
 const handleError = (statusCode, res, content) => {
   res.status(statusCode).send(content);
 };
-
+// GET: /products -> return all the products
 export const getAllProducts = async (req, res) => {
   try {
     res.status(200).send({
@@ -22,16 +22,14 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-export const getSingleProduct = async (req, res) => {
+export const getSingleProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
     const product = products.find((product) => product.id === id);
     if (!product) {
-      res.status(404).send({
-        success: false,
-        message: "Product Not Found",
-      });
-      return;
+      const error = new Error(`product is not found with this id ${id}`);
+      error.status = 404;
+      throw error;
     }
     res.status(200).send({
       success: true,
@@ -39,7 +37,7 @@ export const getSingleProduct = async (req, res) => {
       payload: product,
     });
   } catch (error) {
-    handleError(500, res, "server error");
+    next(error);
   }
 };
 

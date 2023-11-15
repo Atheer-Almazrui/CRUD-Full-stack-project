@@ -1,5 +1,6 @@
 import { Router } from "express";
 import "dotenv/config";
+
 import {
   getAllProducts,
   getSingleProduct,
@@ -7,13 +8,15 @@ import {
   createProduct,
   updateProduct,
 } from "../controllers/productController.js";
+import { productIdValidator } from "../validator/productValidator.js";
+import { runValidation } from "../validator/index.js";
 
 const productRouter = Router();
 
-productRouter.get("/products", getAllProducts);
-productRouter.get("/products/:id", getSingleProduct);
-productRouter.delete("/products/:id", deleteProduct);
-productRouter.post("/products", createProduct);
-productRouter.put("/products/:id", updateProduct);
+productRouter.get("/", getAllProducts);
+productRouter.get("/:id", productIdValidator, runValidation, getSingleProduct);
+productRouter.delete("/:id", productIdValidator, runValidation, deleteProduct);
+productRouter.post("/", createProduct);
+productRouter.put("/:id", productIdValidator, runValidation, updateProduct);
 
 export default productRouter;

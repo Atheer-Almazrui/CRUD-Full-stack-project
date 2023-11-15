@@ -20,24 +20,11 @@ app.use(limiter);
 
 // to make request from frontend
 app.use(cors());
-
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(productRouter);
 
-// let products = [
-//   { id: "1", name: "iphone 15", price: 3000 },
-//   { id: "2", name: "smart watch", price: 300 },
-//   { id: "3", name: "headphones", price: 100 },
-// ];
-
-// app.get("/products", (req, res) => {
-//   res.status(200).json({
-//     message: "all products are returned",
-//     payload: products,
-//   });
-// });
+app.use("/products", productRouter);
 
 // client error
 app.use((req, res, next) => {
