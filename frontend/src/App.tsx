@@ -14,13 +14,14 @@ type newProduct = {
   price: number;
 };
 
-
 const App = () => {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState({
     name: "",
     price: 0,
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedProductID, setUpdatedProductID] = useState("");
 
   const fetchProducts = async () => {
     const { data } = await axios.get("http://localhost:3003/products");
@@ -37,6 +38,20 @@ const App = () => {
     fetchProducts();
   };
 
+  const updateProduct = async (id: string) => {
+    console.log(product);
+    await axios.put(`http://localhost:3003/products/${id}`, product);
+    fetchProducts();
+
+    // to Reset
+    setIsEditing(false);
+    setProduct({
+      name: "",
+      price: 0,
+    });
+    setUpdatedProductID("");
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -51,7 +66,7 @@ const App = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    console.log(product)
+    console.log(product);
     createProduct(product);
     setProduct({
       name: "",
@@ -62,7 +77,7 @@ const App = () => {
   return (
     <div className="div-form">
       <form action="POST" onSubmit={handleSubmit}>
-        <h2> Add new Product</h2>
+        <h2> Enter Product Data</h2>
         <label>
           Name:
           <input
@@ -83,7 +98,13 @@ const App = () => {
           />
         </label>
         <br />
-        <button type="submit">Submit</button>
+        {isEditing ? (
+          <button type="button" onClick={() => updateProduct(updatedProductID)}>
+            Update
+          </button>
+        ) : (
+          <button type="submit">Add</button>
+        )}
       </form>
       <div className="div-card">
         {products.length > 0 &&
@@ -97,7 +118,20 @@ const App = () => {
                   >
                     ❌
                   </h3>
-                  <h3 className="delete">🖊️</h3>
+
+                  <h3
+                    className="delete"
+                    onClick={() => {
+                      setIsEditing(!isEditing);
+                      setProduct({
+                        name: product.name,
+                        price: product.price,
+                      });
+                      setUpdatedProductID(String(product.id));
+                    }}
+                  >
+                    🖊️
+                  </h3>
                 </div>
                 <h4>ID: {product.id}</h4>
                 <p className="price">${product.price}</p>

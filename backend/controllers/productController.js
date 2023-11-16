@@ -8,7 +8,6 @@ const handleError = (statusCode, res, content) => {
 
 // GET: /products -> return all the products
 export const getAllProducts = async (req, res) => {
-
   try {
     res.status(200).send({
       success: true,
@@ -76,7 +75,7 @@ export const deleteProduct = async (req, res, next) => {
     const filteredProducts = products.filter((product) => product.id !== id);
     products = filteredProducts;
     await fs.writeFile("products.json", JSON.stringify(products));
-    
+
     res.status(200).send({
       success: true,
       message: "Single product is deleted",
@@ -87,10 +86,10 @@ export const deleteProduct = async (req, res, next) => {
 };
 
 // PUT: /products/:id -> update single product
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const { title, price } = req.body;
+    const { name, price } = req.body;
     const index = products.findIndex((product) => product.id === id);
     if (index === -1) {
       res.status(404).send({
@@ -100,14 +99,16 @@ export const updateProduct = async (req, res) => {
       return;
     }
 
-    products[index].name = title ?? title;
+    products[index].name = name ?? name;
     products[index].price = price ?? price;
+
+    await fs.writeFile("products.json", JSON.stringify(products));
 
     res.status(200).send({
       success: true,
       message: "product is updated",
     });
   } catch (error) {
-    handleError(500, res, "server error");
+    next(error);
   }
 };
