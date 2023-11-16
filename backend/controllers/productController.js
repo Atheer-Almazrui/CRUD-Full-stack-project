@@ -1,16 +1,14 @@
 import fs from "fs/promises";
 
-let products = [
-  { id: "1", name: "iphone 15", price: 3000 },
-  { id: "2", name: "smart watch", price: 300 },
-  { id: "3", name: "headphones", price: 100 },
-];
+let products = JSON.parse(await fs.readFile("products.json", "utf-8"));
 
 const handleError = (statusCode, res, content) => {
   res.status(statusCode).send(content);
 };
+
 // GET: /products -> return all the products
 export const getAllProducts = async (req, res) => {
+
   try {
     res.status(200).send({
       success: true,
@@ -22,6 +20,7 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+// GET: /products/:id -> get single product
 export const getSingleProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -41,6 +40,7 @@ export const getSingleProduct = async (req, res, next) => {
   }
 };
 
+// POST: /products -> create a product
 export const createProduct = async (req, res) => {
   try {
     const newProduct = {
@@ -49,12 +49,8 @@ export const createProduct = async (req, res) => {
       price: req.body.price,
     };
 
-    const existingProducts = JSON.parse(
-      await fs.readFile("products.json", "utf-8")
-    );
-
-    existingProducts.push(newProduct);
-    await fs.writeFile("products.json", JSON.stringify(existingProducts));
+    products.push(newProduct);
+    await fs.writeFile("products.json", JSON.stringify(products));
 
     res.status(201).send({
       success: true,
@@ -65,7 +61,8 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const deleteProduct = async (req, res) => {
+// DELETE: /products/:id -> delete single product
+export const deleteProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
     const product = products.find((product) => product.id === id);
@@ -78,16 +75,18 @@ export const deleteProduct = async (req, res) => {
     }
     const filteredProducts = products.filter((product) => product.id !== id);
     products = filteredProducts;
-
+    await fs.writeFile("products.json", JSON.stringify(products));
+    
     res.status(200).send({
       success: true,
       message: "Single product is deleted",
     });
   } catch (error) {
-    handleError(500, res, "server error");
+    next(error);
   }
 };
 
+// PUT: /products/:id -> update single product
 export const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;

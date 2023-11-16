@@ -7,11 +7,11 @@ import "dotenv/config";
 import productRouter from "../backend/routes/productRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || "3002";
+const port = process.env.PORT || 8080;
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minutes
-  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  limit: 20, // Limit each IP to 100 requests per `window` (here, per 1 minutes).
   message: "too many requests within 1 minutes",
 });
 
@@ -22,7 +22,7 @@ app.use(limiter);
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/products", productRouter);
 
@@ -40,6 +40,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(3003, () => {
-  console.log(`server is running at http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`server is running at http://localhost:${port}`);
 });
