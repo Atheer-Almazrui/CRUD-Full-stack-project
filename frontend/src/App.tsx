@@ -9,6 +9,12 @@ type Product = {
   price: number;
 };
 
+type newProduct = {
+  name: string;
+  price: number;
+};
+
+
 const App = () => {
   const [products, setProducts] = useState([]);
   const [product, setProduct] = useState({
@@ -26,7 +32,7 @@ const App = () => {
     fetchProducts();
   };
 
-  const createProduct = async (product: Product) => {
+  const createProduct = async (product: newProduct) => {
     await axios.post("http://localhost:3003/products", product);
     fetchProducts();
   };
@@ -45,6 +51,7 @@ const App = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    console.log(product)
     createProduct(product);
     setProduct({
       name: "",
@@ -92,7 +99,7 @@ const App = () => {
                   </h3>
                   <h3 className="delete">🖊️</h3>
                 </div>
-                <h1>ID: {product.id}</h1>
+                <h4>ID: {product.id}</h4>
                 <p className="price">${product.price}</p>
                 <p>{product.name}</p>
               </div>

@@ -45,7 +45,7 @@ export const createProduct = async (req, res) => {
   try {
     const newProduct = {
       id: new Date().getTime().toString(),
-      name: req.body.title,
+      name: req.body.name,
       price: req.body.price,
     };
 
