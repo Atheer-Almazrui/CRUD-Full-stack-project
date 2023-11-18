@@ -9,10 +9,7 @@ type Product = {
   price: number;
 };
 
-type newProduct = {
-  name: string;
-  price: number;
-};
+type newProduct = Omit<Product, "id">;
 
 const App = () => {
   const [products, setProducts] = useState([]);
